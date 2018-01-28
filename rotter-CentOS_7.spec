@@ -45,6 +45,9 @@ Summary:        Rotter is a Recording of Transmission / Audio Logger for JACK
 License:        GPLv2
 URL:            https://www.aelius.com/njh/rotter/
 Source0:        https://github.com/njh/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+# Fix custom strftime-style format layout
+# https://github.com/njh/rotter/issues/29
+Patch0:         https://github.com/radiorabe/%{name}/commit/d3c851053c83857fa39c06e67733e31e2bfe4071.diff
 
 BuildRequires:  asciidoc
 BuildRequires:  jack-audio-connection-kit-devel
@@ -72,7 +75,7 @@ folder hierarchy is that you can store related files in the hour's directory.
 
 
 %prep
-%autosetup -n %{name}-%{commit}
+%autosetup -n %{name}-%{commit} -p 1
 
 
 %build
@@ -93,6 +96,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Jan 28 2018 Christian Affolter <c.affolter@purplehaze.ch> - 0.9-2.20151103git9a13295
+- Applying strftime-style format layout patch
+
 * Thu Jan 25 2018 Christian Affolter <c.affolter@purplehaze.ch> - 0.9-1.20151103git9a13295
 - Initial release
 
