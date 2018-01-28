@@ -29,7 +29,7 @@
 %bcond_without twolame
 
 %global commit 9a13295e83e213a805881129f9593ea332cdee36
-%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global shortcommit 9a13295
 
 Name:           rotter
 Version:        0.9
