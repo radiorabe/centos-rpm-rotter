@@ -28,20 +28,17 @@
 # add --without twolame option, i.e. enable twolame by default
 %bcond_without twolame
 
-%global commit 9a13295e83e213a805881129f9593ea332cdee36
+%global commit a5538b76da5f0933361509eb2322afbffedf890c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           rotter
 Version:        0.9
-Release:        2.20151103git%{shortcommit}%{?dist}
+Release:        3.20180129git%{shortcommit}%{?dist}
 Summary:        Rotter is a Recording of Transmission / Audio Logger for JACK
 
 License:        GPLv2
 URL:            https://www.aelius.com/njh/rotter/
 Source0:        https://github.com/njh/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
-# Fix custom strftime-style format layout
-# https://github.com/njh/rotter/issues/29
-Patch0:         https://github.com/radiorabe/%{name}/commit/d3c851053c83857fa39c06e67733e31e2bfe4071.diff
 
 BuildRequires:  asciidoc
 BuildRequires:  jack-audio-connection-kit-devel
@@ -69,7 +66,7 @@ folder hierarchy is that you can store related files in the hour's directory.
 
 
 %prep
-%autosetup -n %{name}-%{commit} -p 1
+%autosetup -n %{name}-%{commit}
 
 
 %build
@@ -90,6 +87,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jan 29 2018 Christian Affolter <c.affolter@purplehaze.ch> - 0.9-3.20180130gita5538b7
+- Bump to a5538b7 (2018-01-29) which includes the previous strftime-style-layout
+  patch
+
 * Sun Jan 28 2018 Christian Affolter <c.affolter@purplehaze.ch> - 0.9-2.20151103git9a13295
 - Applying strftime-style format layout patch
 
