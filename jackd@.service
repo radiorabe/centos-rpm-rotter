@@ -1,0 +1,36 @@
+[Unit]
+Description=JACK sound server (%I instance)
+Documentation=man:jackd(1) http://www.jackaudio.org/ https://github.com/jackaudio/jack2
+After=axialwrd.service network-online.target sound.target
+
+# jack_wait is required for the unit to block until jackd has started
+AssertFileIsExecutable=/usr/bin/jack_wait
+
+[Service]
+# Configure the DBUS session address for jack to use
+# https://raspberrypi.stackexchange.com/a/56493
+Environment="DBUS_SESSION_BUS_ADDRESS=unix:path=/run/dbus/system_bus_socket"
+
+# According to /etc/security/limits.d/95-jack.conf
+LimitRTPRIO=70
+LimitMEMLOCK=128M
+
+User=nobody
+Group=jackuser
+
+# jackd server name
+Environment="JACKD_SERVERNAME=%i"
+
+# jackd startup options
+Environment="JACKD_OPTIONS=-d dummy"
+
+# Wait for up to 10 seconds for jackd to be ready
+Environment="JACKD_WAIT_TIMEOUT=10"
+
+ExecStart=/usr/bin/jackd --name ${JACKD_SERVERNAME} $JACKD_OPTIONS
+ExecStartPost=/usr/bin/jack_wait --server ${JACKD_SERVERNAME} \
+                                 --wait \
+                                 --timeout ${JACKD_WAIT_TIMEOUT}
+
+[Install]
+WantedBy=multi-user.target
