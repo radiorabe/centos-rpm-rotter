@@ -69,6 +69,8 @@ with each other and are supposed to be run with the same instance name.
 
 [`jackd@.service`](jackd@.service) is a generic service unit template for
 starting one ore more headless `jackd` instances:
+* It is a generic jackd service unit template and can be used for other
+  use-cases as well (i.e. it's not limited to the rotter usage)
 * It sets the required real-time priorities (`LimitRTPRIO=`) and maximum
   locked-in-memory address space (`LimitMEMLOCK=`)
 * It starts `jackd` with the dummy backend by default.
