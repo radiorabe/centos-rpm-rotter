@@ -15,7 +15,7 @@ LimitMEMLOCK=128M
 
 
 # Rotter recording root directory
-Environment="ROTTER_ROOT_DIR=/var/tmp/rotter/%i"
+Environment="ROTTER_ROOT_DIR=/var/lib/rotter/%i"
 
 # Rotter startup options
 Environment="ROTTER_OPTIONS=-a -j"
