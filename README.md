@@ -42,20 +42,20 @@ cat > /etc/systemd/system/jackd@${instanceName}.service.d/override.conf << "EOF"
 [Service]
 User=rotter
 Group=rotter
+SupplementaryGroups=audio
 
 # Jackd startup options
 Environment="JACKD_OPTIONS=-d alsa --device hw:0 --capture --inchannels 2"
 EOF
 
-# Enable and start the jackd 'example' instance
-systemctl enable jackd@${instanceName}.service
-systemctl start jackd@${instanceName}.service
-systemctl status jackd@${instanceName}.service
-
 # Enable and start the rotter 'example' instance
 systemctl enable rotter@${instanceName}.service
 systemctl start rotter@${instanceName}.service
 systemctl status rotter@${instanceName}.service
+
+# The rotter instance triggered the start of a jackd instance with the same
+# instance name
+systemctl status jackd@${instanceName}.service
 ```
 
 The systemd service will also create the necessary recording root directory
@@ -81,6 +81,8 @@ starting one ore more headless `jackd` instances:
   `jack_wait` command.
 * Start-up overrides of possible interest are `User=`/`Group=`,
   `Environment="JACKD_SERVERNAME=%i"` and `Environment="JACKD_OPTIONS=-d dummy"`
+* You need to add `SupplementaryGroups=audio` to your instance override, in case
+  you would like to use jackd's ALSA backend.
   
 [`rotter@.service`](rotter@.service) is a service unit template for starting one
 ore more `rotter` instances:
