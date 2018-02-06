@@ -45,6 +45,9 @@ Summary:        Rotter is a Recording of Transmission / Audio Logger for JACK
 License:        GPLv2
 URL:            https://www.aelius.com/njh/rotter/
 Source0:        https://github.com/njh/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source1:        %{name}@.service
+Source2:        jackd@.service
+Source3:        dbus-%{name}.conf
 
 BuildRequires:  asciidoc
 BuildRequires:  jack-audio-connection-kit-devel
@@ -59,7 +62,15 @@ BuildRequires:  libsndfile-devel
 BuildRequires:  twolame-devel
 %endif
 
+%{?systemd_requires}
+BuildRequires: systemd
+
 BuildRequires:  xmlto
+
+Requires(pre): shadow-utils
+# Required for the jackd@.service systemd service unit template
+Requires: jack-audio-connection-kit-example-clients
+
 
 %description
 Rotter is a Recording of Transmission / Audio Logger for JACK. It was designed
@@ -85,14 +96,46 @@ make %{?_smp_mflags}
 rm -rf $RPM_BUILD_ROOT
 %make_install
 
+# Install the systemd service unit
+install -d %{buildroot}/%{_unitdir}
+install -m 644 %{SOURCE1} %{buildroot}/%{_unitdir}
+install -m 644 %{SOURCE2} %{buildroot}/%{_unitdir}
+
+# Install the dbus rotter configuration
+install -d %{buildroot}/%{_sysconfdir}/dbus-1/system.d
+install -m 644 %{SOURCE3} %{buildroot}/%{_sysconfdir}/dbus-1/system.d/%{name}.conf
+
+# rotter recording instance root and home directory
+install -d %{buildroot}/%{_sharedstatedir}/%{name}
+
+
+%pre
+getent group %{name} >/dev/null || groupadd -r %{name}
+getent passwd %{name} >/dev/null || \
+    useradd -r -g %{name} -d /var/lib/%{name} -s /sbin/nologin \
+    -c "%{name} system user account" %{name}
+exit 0
+
 
 %files
 %doc ChangeLog README.md
 %{_bindir}/*
 %{_mandir}/man1/*
+%{_unitdir}/*
+
+# Install dbus system configuration to run jackd in headless mode
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/%{name}.conf
+
+# rotter recording instance root and home directory
+%dir %attr(0755, %{name}, %{name}) %{_sharedstatedir}/%{name}
 
 
 %changelog
+* Tue Feb 06 2018 Christian Affolter <c.affolter@purplehaze.ch> - 0.9-4.20180129gita5538b7
+- Add systemd service units
+- Create rotter system user/group
+- Add D-Bus configuration to run jackd in headless mode
+
 * Mon Jan 29 2018 Christian Affolter <c.affolter@purplehaze.ch> - 0.9-3.20180130gita5538b7
 - Bump to a5538b7 (2018-01-29) which includes the previous strftime-style-layout
   patch
