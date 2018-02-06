@@ -112,6 +112,11 @@ getent passwd %{name} >/dev/null || \
 exit 0
 
 
+%post
+# activate the installed D-Bus system configuration snippet
+systemctl reload dbus >/dev/null 2>&1 || :
+
+
 %files
 %doc ChangeLog README.md
 %{_bindir}/*
