@@ -1,0 +1,31 @@
+[Unit]
+Description=Rotter Audio Logger (%I instance)
+Documentation=man:rotter(1) https://www.aelius.com/njh/rotter/
+BindsTo=jackd@%i.service
+After=jackd@%i.service
+
+
+[Service]
+User=rotter
+Group=rotter
+
+# According to /etc/security/limits.d/95-jack.conf
+LimitRTPRIO=70
+LimitMEMLOCK=128M
+
+
+# Rotter recording root directory
+Environment="ROTTER_ROOT_DIR=/var/tmp/rotter/%i"
+
+# Rotter startup options
+Environment="ROTTER_OPTIONS=-a -j"
+
+# Jackd server-name to connect to
+Environment="JACK_DEFAULT_SERVER=%i"
+
+ExecStartPre=/usr/bin/mkdir -p ${ROTTER_ROOT_DIR}
+ExecStart=/usr/bin/rotter $ROTTER_OPTIONS ${ROTTER_ROOT_DIR}
+
+
+[Install]
+WantedBy=multi-user.target
